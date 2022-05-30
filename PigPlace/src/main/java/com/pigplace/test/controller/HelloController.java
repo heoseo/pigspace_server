@@ -1,13 +1,19 @@
 package com.pigplace.test.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
+import com.pigplace.test.vo.TestVO;
+
+@Controller
 public class HelloController {
 	
-	@RequestMapping("/hello")
-	public String hello() {
-		return "SpringBoot Hello World!";
+	@GetMapping("/testvo")
+	public @ResponseBody TestVO testvo() {
+		TestVO testVO = new TestVO();
+		testVO.setId("ID");
+		testVO.setPw("PW");
+		return testVO;
 	}
-}
+} 
