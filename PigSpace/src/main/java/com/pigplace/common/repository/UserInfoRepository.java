@@ -1,0 +1,16 @@
+package com.pigplace.common.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.pigplace.common.entity.UserInfo;
+
+@Repository
+public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
+//	@Query("SELECT u FROM user_info u WHERE u.user_id = :id AND user_pw = :pw")
+//    UserInfo selectUserInfo(@Param("id") String user_id, @Param("pw") String user_pw);
+
+	Optional<UserInfo> findByUserId(String userId);
+}

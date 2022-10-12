@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pigplace.common.entity.MemberEntity;
+import com.pigplace.common.repository.MemberRepository;
+import com.pigplace.common.repository.UserInfoRepository;
 import com.pigplace.common.vo.ControllerSupport;
 import com.pigplace.common.vo.ResponseEntity;
-import com.pigplace.test.entity.MemberEntity;
-import com.pigplace.test.repository.MemberRepository;
+import com.pigplace.member.vo.LoginDTO;
 import com.pigplace.test.vo.TestVO;
 
 import lombok.RequiredArgsConstructor;
@@ -21,10 +24,10 @@ import net.minidev.json.parser.ParseException;
 
 @RestController // JSON 형태 결과값을 반환해줌 (@ResponseBody가 필요없음)
 @RequiredArgsConstructor // final 객체를 Constructor Injection 해줌. (Autowired 역할)
-@RequestMapping("/api/member")
 public class LoginController extends ControllerSupport{
 	
 	private final MemberRepository memberRepository;
+	private final UserInfoRepository userInfoRepository;
 
     /**
      * 멤버 조회
@@ -89,9 +92,9 @@ public class LoginController extends ControllerSupport{
 		return getFailResponse();
 	}
 	
-	@PostMapping("/postTest")
-	public ResponseEntity<?> postTest() {
-        return getOkResponse(200, "SUCCESS");
+	@GetMapping("/getTest/{name}")
+	public ResponseEntity<?> postTest(@PathVariable("name") String name) {
+        return getOkResponse(200, name);
 	}
 	
 	@GetMapping("/get")
@@ -109,5 +112,14 @@ public class LoginController extends ControllerSupport{
 		return getFailResponse("조회실패...");
 	}
 	
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginDTO pvo){
+		
+//		UserInfo userinfo = userInfoRepository.selectUserInfo(pvo.getUserId(), pvo.getUserPw());
+
+//		System.out.println("@@@@@@@@@@@@@@@@"+userinfo);
+		
+		return getOkResponse(200);
+	}
 }
 	

@@ -1,4 +1,4 @@
-package com.pigplace.test.entity;
+package com.pigplace.common.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +9,10 @@ import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter // getter 메소드 생성
+@Data
 @Builder // 빌더를 사용할 수 있게 함
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

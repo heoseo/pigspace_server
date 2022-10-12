@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pigplace.common.entity.MemberEntity;
+import com.pigplace.common.repository.MemberRepository;
 import com.pigplace.common.vo.ControllerSupport;
 import com.pigplace.common.vo.ResponseEntity;
-import com.pigplace.test.entity.MemberEntity;
-import com.pigplace.test.repository.MemberRepository;
 import com.pigplace.test.vo.TestVO;
 
 import lombok.RequiredArgsConstructor;
@@ -55,10 +56,11 @@ public class RestTestController extends ControllerSupport{
     
 	@SuppressWarnings("deprecation")
 	@GetMapping("/getTest")
-	public ResponseEntity<?> getTest(){
+	public ResponseEntity<?> getTest(@PathVariable String name){
+		System.out.println("@@@@@@@@@@@@@@"+name);
 		 //1. Json ¹®ÀÚ¿­
-        String strJson = "{\"result\":\"SUCCESS\""
-//                        + "\"userPw\":\"simpw\","
+        String strJson = "{\"result\":\"Y\","
+                        + "\"id\":\"1234\""
 //                        + "\"userInfo\":{"
 //                            + "\"age\":50,"
 //                            + "\"sex\":\"male\""
@@ -78,7 +80,7 @@ public class RestTestController extends ControllerSupport{
 	        
 	        //print
 	        System.out.println(jsonObj.get("result")); //sim
-//	        System.out.println(jsonObj.get("userPw")); //simpw
+	        System.out.println(jsonObj.get("id")); //simpw
 //	        System.out.println(jsonObj.get("userInfo")); // {"sex":"male","age":50}
 	        return getOkResponse(200, "OK", obj);
 		} catch (ParseException e) {
@@ -89,7 +91,7 @@ public class RestTestController extends ControllerSupport{
 		return getFailResponse();
 	}
 	
-	@PostMapping("/postTest")
+	@PostMapping("/postTest/{name}")
 	public ResponseEntity<?> postTest() {
         return getOkResponse(200, "SUCCESS");
 	}
