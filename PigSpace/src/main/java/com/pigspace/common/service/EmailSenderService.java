@@ -1,4 +1,4 @@
-package com.pigspace.comn.service;
+package com.pigspace.common.service;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;

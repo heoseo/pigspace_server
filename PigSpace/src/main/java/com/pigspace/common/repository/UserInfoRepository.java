@@ -1,11 +1,11 @@
-package com.pigspace.comn.repository;
+package com.pigspace.common.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pigspace.comn.entity.UserInfo;
+import com.pigspace.common.entity.UserInfo;
 
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {

@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pigspace.common.entity.UserInfo;
+import com.pigspace.common.repository.UserInfoRepository;
 import com.pigspace.common.support.ControllerSupport;
 import com.pigspace.common.support.ResponseEntity;
 import com.pigspace.common.util.StringUtil;
-import com.pigspace.comn.entity.UserInfo;
-import com.pigspace.comn.repository.UserInfoRepository;
 import com.pigspace.member.vo.LoginDTO;
 import com.pigspace.member.vo.LoginRVO;
 

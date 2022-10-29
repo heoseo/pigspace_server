@@ -3,14 +3,14 @@ package com.pigspace.member.service;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import com.pigspace.common.entity.EmailToken;
+import com.pigspace.common.entity.UserInfo;
+import com.pigspace.common.repository.UserInfoRepository;
+import com.pigspace.common.service.EmailSenderService;
+import com.pigspace.common.service.EmailTokenService;
 import com.pigspace.common.support.PigException;
 import com.pigspace.common.util.DateUtil;
-import com.pigspace.comn.entity.EmailToken;
-import com.pigspace.comn.entity.UserInfo;
-import com.pigspace.comn.repository.UserInfoRepository;
-import com.pigspace.comn.service.EmailSenderService;
-import com.pigspace.comn.service.EmailTokenService;
-import com.pigspace.comn.vo.MailContentBuilder;
+import com.pigspace.common.vo.MailContentBuilder;
 import com.pigspace.member.vo.EmailVO;
 import com.pigspace.member.vo.JoinDTO;
 
