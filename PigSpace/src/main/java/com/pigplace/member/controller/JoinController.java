@@ -24,8 +24,10 @@ import com.pigplace.member.vo.CheckIdRVO;
 import com.pigplace.member.vo.EmailVO;
 import com.pigplace.member.vo.JoinDTO;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "회원가입", description = "회원가입")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
