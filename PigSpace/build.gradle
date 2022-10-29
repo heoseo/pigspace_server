@@ -24,15 +24,25 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
+	//runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	
+
 	//swagger
-	implementation 'io.springfox:springfox-boot-starter:3.0.0'
-	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
-	
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA
-	implementation 'mysql:mysql-connector-java' // MySql
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
+
+	// JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// MySql
+	implementation 'mysql:mysql-connector-java'
+
+	//SMTP
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	//thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-test'
+
 }
 
 tasks.named('test') {
