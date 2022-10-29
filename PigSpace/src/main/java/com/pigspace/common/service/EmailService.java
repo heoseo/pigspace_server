@@ -1,13 +1,13 @@
-package com.pigspace.comn.service;
+package com.pigspace.common.service;
 
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pigspace.comn.entity.EmailToken;
-import com.pigspace.comn.entity.UserInfo;
-import com.pigspace.comn.repository.UserInfoRepository;
+import com.pigspace.common.entity.EmailToken;
+import com.pigspace.common.entity.UserInfo;
+import com.pigspace.common.repository.UserInfoRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
