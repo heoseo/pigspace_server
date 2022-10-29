@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 /**
- * <h1>È¸¿ø°¡ÀÔ ¿äÃ» VO</h1>
+ * <h1>íšŒì›ê°€ì… vo</h1>
  * @author heoseo
  *
  */
@@ -13,14 +13,14 @@ import lombok.Data;
 public class JoinDTO implements Serializable{
 
 	private static final long serialVersionUID = -2549328862851803865L;
-	
+
 	private String userNm;
-	
+
 	private String userId;
-	
+
 	private String userPw;
-	
+
 	private String phoneNo;
-	
+
 	private String profileImg;
 }

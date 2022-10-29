@@ -1,8 +1,10 @@
-package com.pigplace.common.entity;
+package com.pigplace.comn.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import org.hibernate.annotations.ColumnDefault;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,16 +15,17 @@ import lombok.ToString;
 
 @ToString
 @Getter
-@Builder // ºô´õ¸¦ »ç¿ëÇÒ ¼ö ÀÖ°Ô ÇÔ
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name="USER_INFO") // Å×ÀÌºí ¸íÀ» ÀÛ¼º
+@Entity(name="USER_INFO") // ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½
 public class UserInfo {
 
-	@Column
+
+	@Id
 	private String mbrNo;
 
-	@Column
+	@Column(unique = true)
     private String userId;
 
 //    @Column(nullable = false, unique = true, length = 30)
@@ -32,11 +35,11 @@ public class UserInfo {
     @Column
     private String userNm;
 
-    @Id
+    @Column(unique = true)
     private String phoneNo;
 
 //    @Column(nullable = false, length = 100)
-    @Column
+    @Column(unique = true)
     private String nickname;
 
     @Column
@@ -56,5 +59,13 @@ public class UserInfo {
 
     @Column
     private String joinType;
+
+    @Column
+    @ColumnDefault("0") //default 0
+    private Boolean verified;
+
+    public void setVerified() {
+    	this.verified = true;
+    }
 
 }

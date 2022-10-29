@@ -1,4 +1,4 @@
-package com.pigplace.common.config;
+package com.pigplace.common.support;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +29,7 @@ public class ExceptionController {
 	@ExceptionHandler(NoHandlerFoundException.class)
 	protected ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException e,
 			HttpServletRequest request) {
-//		exceptionService.errorLog(e, request);  
+//		exceptionService.errorLog(e, request);
 		return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Not Found", e.getMessage()),
 				HttpStatus.NOT_FOUND);
 	}

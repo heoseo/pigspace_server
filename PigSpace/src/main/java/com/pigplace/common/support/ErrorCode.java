@@ -1,4 +1,4 @@
-package com.pigplace.common.config;
+package com.pigplace.common.support;
 
 import lombok.AllArgsConstructor;
 

@@ -1,65 +1,40 @@
 package com.pigplace.member.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pigplace.common.entity.MemberEntity;
-import com.pigplace.common.repository.MemberRepository;
-import com.pigplace.common.repository.UserInfoRepository;
-import com.pigplace.common.vo.ControllerSupport;
-import com.pigplace.common.vo.ResponseEntity;
+import com.pigplace.common.support.ControllerSupport;
+import com.pigplace.common.support.ResponseEntity;
+import com.pigplace.common.util.StringUtil;
+import com.pigplace.comn.entity.UserInfo;
+import com.pigplace.comn.repository.UserInfoRepository;
 import com.pigplace.member.vo.LoginDTO;
-import com.pigplace.test.vo.TestVO;
+import com.pigplace.member.vo.LoginRVO;
 
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 
-@RestController // JSON «¸≈¬ ∞·∞˙∞™¿ª π›»Ø«ÿ¡‹ (@ResponseBody∞° « ø‰æ¯¿Ω)
-@RequiredArgsConstructor // final ∞¥√º∏¶ Constructor Injection «ÿ¡‹. (Autowired ø™«“)
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/member")
 public class LoginController extends ControllerSupport{
-	
-	private final MemberRepository memberRepository;
+
 	private final UserInfoRepository userInfoRepository;
 
-    /**
-     * ∏‚πˆ ¡∂»∏
-     * @return
-     */ 
-    @GetMapping("member")
-    public ResponseEntity<?> findAllMember() {
-        List<MemberEntity> memberList = memberRepository.findAll();
-        
-        return getOkResponse("¡∂»∏º∫∞¯~!", memberList);
-    }
 
-    /**
-     * »∏ø¯∞°¿‘
-     * @return
-     */
-    @PostMapping("member")
-    public ResponseEntity<?> signUp() {
-        final MemberEntity member = MemberEntity.builder()
-                .username("test_user@gmail.com")
-                .name("test user")
-                .build();
-        
-//        memberRepository.save(member);
-        
-        return getOkResponse(memberRepository.save(member));
-    }
-    
+
 	@SuppressWarnings("deprecation")
 	@GetMapping("/getTest")
 	public ResponseEntity<?> getTest(){
-		 //1. Json πÆ¿⁄ø≠
+		 //1. Json
         String strJson = "{\"result\":\"SUCCESS\""
 //                        + "\"userPw\":\"simpw\","
 //                        + "\"userInfo\":{"
@@ -67,18 +42,18 @@ public class LoginController extends ControllerSupport{
 //                            + "\"sex\":\"male\""
 //                            + "}"
                         + "}";
-        
+
         //2. Parser
         JSONParser jsonParser = new JSONParser();
-        
+
         //3. To Object
         Object obj;
 		try {
 			obj = jsonParser.parse(strJson);
-        
+
 	        //4. To JsonObject
 	        JSONObject jsonObj = (JSONObject) obj;
-	        
+
 	        //print
 	        System.out.println(jsonObj.get("result")); //sim
 //	        System.out.println(jsonObj.get("userPw")); //simpw
@@ -88,38 +63,34 @@ public class LoginController extends ControllerSupport{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return getFailResponse();
 	}
-	
+
 	@GetMapping("/getTest/{name}")
 	public ResponseEntity<?> postTest(@PathVariable("name") String name) {
         return getOkResponse(200, name);
 	}
-	
-	@GetMapping("/get")
-	public ResponseEntity<TestVO> testvo() {
-		TestVO testVO = new TestVO();
-		testVO.setId("ID"); 
-		testVO.setPw("PW");
-		
-		List<TestVO> testList = new ArrayList<>();
-		testList.add(testVO);
-		testList.add(testVO);
-		
-//		return getOkResponse(testList);
-//		return getOkResponse("¡∂»∏º∫∞¯~!", testList);
-		return getFailResponse("¡∂»∏Ω«∆–...");
-	}
-	
+
+
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginDTO pvo){
-		
-//		UserInfo userinfo = userInfoRepository.selectUserInfo(pvo.getUserId(), pvo.getUserPw());
 
-//		System.out.println("@@@@@@@@@@@@@@@@"+userinfo);
-		
-		return getOkResponse(200);
+		UserInfo user = null;
+		LoginRVO loginRVO = new LoginRVO();
+
+		Optional<UserInfo> optUser = userInfoRepository.findByUserIdAndUserPw(pvo.getUserId(), pvo.getUserPw());
+
+		if(optUser.isPresent()) {
+			user = optUser.get();
+			System.out.println("@@@@@@@@@@@@@@@@"+user);
+			loginRVO.setMbrNo(user.getMbrNo());
+			loginRVO.setVerifiedYN(user.getVerified() ? "Y" : "N");
+			loginRVO.setNickSetYN(StringUtil.isNullOrEmpty(user.getNickname()) ? "N" : "Y");
+			return getOkResponse(loginRVO);
+		}else
+			return getFailResponse(400, "Î°úÍ∑∏Ïù∏ Ï†ïÎ≥¥ ÏóÜÏùå");
+
+
 	}
 }
-	

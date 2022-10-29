@@ -28,13 +28,20 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	//swagger
-	implementation 'io.springfox:springfox-boot-starter:3.0.0'
-	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
 
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA
-	implementation 'mysql:mysql-connector-java' // MySql
+	// JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// MySql
+	implementation 'mysql:mysql-connector-java'
+
 	//SMTP
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	//thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-test'
 
 }
 

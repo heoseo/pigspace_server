@@ -1,98 +1,98 @@
-package com.pigplace.common.vo;
+package com.pigplace.common.support;
 
 public class ControllerSupport {
-	
+
 	/**
-	 * <h1>ÀÀ´äÄÚµå¿Í ¸Ş¼¼Áö¸¦ ÁöÁ¤ÇÏ°í data¸¦ ´ãÀº Response</h1>
+	 * <h1>ì‘ë‹µì½”ë“œì™€ ë©”ì„¸ì§€ë¥¼ ì§€ì •í•˜ê³  dataë¥¼ ë‹´ì€ Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(int code, String message, T data){
 		ResponseEntity<T> res = new ResponseEntity<T>(code, message, data);
 		return res;
 	}
 
-	
-	
-	
-	//¼º°ø ÀÀ´ä ¸®ÅÏ(default StatusCode : 200)
+
+
+
+	//ì„±ê³µ ì‘ë‹µ ë¦¬í„´(default StatusCode : 200)
 	/**
-	 * <h1>data°¡ ¾ø´Â Response</h1>
+	 * <h1>dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(){
 		return this.getOkResponse(200, Status.StatusCode.get(200), null);
 	}
 	/**
-	 * <h1>data¸¦ ´ãÀº Response</h1>
+	 * <h1>dataë¥¼ ë‹´ì€ Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(T data) {
 		return this.getOkResponse(200, Status.StatusCode.get(200), data);
 	}
 	/**
-	 * <h1>ÀÀ´äÄÚµå¸¦ ÁöÁ¤ÇÏ°í data°¡ ¾ø´Â Response</h1>
+	 * <h1>ì‘ë‹µì½”ë“œë¥¼ ì§€ì •í•˜ê³  dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(int code){
 		return this.getOkResponse(code, Status.StatusCode.get(code), null);
 	}
 	/**
-	 * <h1>¸Ş¼¼Áö¸¦ ÁöÁ¤ÇÏ°í data°¡ ¾ø´Â Response</h1>
+	 * <h1>ë©”ì„¸ì§€ë¥¼ ì§€ì •í•˜ê³  dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(String message){
 		return this.getOkResponse(200, message, null);
 	}
 	/**
-	 * <h1>ÀÀ´äÄÚµå¿Í ¸Ş¼¼Áö¸¦ data°¡ ¾ø´Â Response</h1>
+	 * <h1>ì‘ë‹µì½”ë“œì™€ ë©”ì„¸ì§€ë¥¼ dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(int code, String message){
 		return this.getOkResponse(code, message, null);
 	}
 	/**
-	 * <h1>¸Ş¼¼Áö¸¦ ÁöÁ¤ÇÏ°í data¸¦ ´ãÀº Response</h1>
+	 * <h1>ë©”ì„¸ì§€ë¥¼ ì§€ì •í•˜ê³  dataë¥¼ ë‹´ì€ Response</h1>
 	 */
 	public <T> ResponseEntity<T> getOkResponse(String message, T data){
 		return this.getOkResponse(200, message, data);
 	}
 
-	
-	
-	
-	//½ÇÆĞ ÀÀ´ä ¸®ÅÏ(default StatusCode : 500)
+
+
+
+	//ì‹¤íŒ¨ ì‘ë‹µ ë¦¬í„´(default StatusCode : 500)
 	/**
-	 * <h1>data°¡ ¾ø´Â Response</h1>
+	 * <h1>dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(){
 		return this.getOkResponse(500, Status.StatusCode.get(500), null);
 	}
 	/**
-	 * <h1>data¸¦ ´ãÀº Response</h1>
+	 * <h1>dataë¥¼ ë‹´ì€ Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(T data) {
 		return this.getOkResponse(500, Status.StatusCode.get(500), data);
 	}
 	/**
-	 * <h1>ÀÀ´äÄÚµå¸¦ ÁöÁ¤ÇÏ°í data°¡ ¾ø´Â Response</h1>
+	 * <h1>ì‘ë‹µì½”ë“œë¥¼ ì§€ì •í•˜ê³  dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(int code){
 		return this.getOkResponse(code, Status.StatusCode.get(code), null);
 	}
 	/**
-	 * <h1>¸Ş¼¼Áö¸¦ ÁöÁ¤ÇÏ°í data°¡ ¾ø´Â Response</h1>
+	 * <h1>ë©”ì„¸ì§€ë¥¼ ì§€ì •í•˜ê³  dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(String message){
 		return this.getOkResponse(500, message, null);
 	}
 	/**
-	 * <h1>ÀÀ´äÄÚµå¿Í ¸Ş¼¼Áö¸¦ data°¡ ¾ø´Â Response</h1>
+	 * <h1>ì‘ë‹µì½”ë“œì™€ ë©”ì„¸ì§€ë¥¼ dataê°€ ì—†ëŠ” Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(int code, String message){
 		return this.getOkResponse(code, message, null);
 	}
 	/**
-	 * <h1>¸Ş¼¼Áö¸¦ ÁöÁ¤ÇÏ°í data¸¦ ´ãÀº Response</h1>
+	 * <h1>ë©”ì„¸ì§€ë¥¼ ì§€ì •í•˜ê³  dataë¥¼ ë‹´ì€ Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(String message, T data){
 		return this.getOkResponse(200, message, data);
 	}
 	/**
-	 * <h1>ÀÀ´äÄÚµå¿Í ¸Ş¼¼Áö¸¦ ÁöÁ¤ÇÏ°í data¸¦ ´ãÀº Response</h1>
+	 * <h1>ì‘ë‹µì½”ë“œì™€ ë©”ì„¸ì§€ë¥¼ ì§€ì •í•˜ê³  dataë¥¼ ë‹´ì€ Response</h1>
 	 */
 	public <T> ResponseEntity<T> getFailResponse(int code, String message, T data){
 		ResponseEntity<T> res = new ResponseEntity<T>(code, Status.StatusCode.get(code), data);

@@ -1,11 +1,11 @@
-package com.pigplace.common.repository;
+package com.pigplace.comn.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pigplace.common.entity.UserInfo;
+import com.pigplace.comn.entity.UserInfo;
 
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
@@ -13,4 +13,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
 //    UserInfo selectUserInfo(@Param("id") String user_id, @Param("pw") String user_pw);
 
 	Optional<UserInfo> findByUserId(String userId);
+	Optional<UserInfo> findByMbrNo(String mbrNo);
+	Optional<UserInfo> findByUserIdAndUserPw(String userId, String userPw);
+
 }

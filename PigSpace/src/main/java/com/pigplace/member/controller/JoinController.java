@@ -9,26 +9,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pigplace.common.entity.UserInfo;
-import com.pigplace.common.repository.UserInfoRepository;
-import com.pigplace.common.util.DateUtil;
+import com.pigplace.common.support.ControllerSupport;
+import com.pigplace.common.support.PigException;
+import com.pigplace.common.support.ResponseEntity;
 import com.pigplace.common.util.StringUtil;
-import com.pigplace.common.vo.ControllerSupport;
-import com.pigplace.common.vo.ResponseEntity;
+import com.pigplace.comn.entity.EmailToken;
+import com.pigplace.comn.entity.UserInfo;
+import com.pigplace.comn.repository.UserInfoRepository;
+import com.pigplace.comn.service.EmailSenderService;
+import com.pigplace.comn.service.EmailTokenService;
+import com.pigplace.comn.vo.MailContentBuilder;
+import com.pigplace.member.service.JoinService;
 import com.pigplace.member.vo.CheckIdRVO;
+import com.pigplace.member.vo.EmailVO;
 import com.pigplace.member.vo.JoinDTO;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController // JSON ÇüÅÂ °á°ú°ªÀ» ¹İÈ¯ÇØÁÜ (@ResponseBody°¡ ÇÊ¿ä¾øÀ½)
-@RequiredArgsConstructor // final °´Ã¼¸¦ Constructor Injection ÇØÁÜ. (Autowired ¿ªÇÒ)
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/member")
 public class JoinController extends ControllerSupport{
 
 	private final UserInfoRepository userInfoRepository;
 
+	private final JoinService joinService;
+
+	private final EmailTokenService emailTokenService;
+	private final MailContentBuilder mailContentBuilder;
+	private final EmailSenderService emailSenderService;
+
+
 	/**
-     * È¸¿ø°¡ÀÔ
+     * íšŒì›ê°€ì…
      * @return
      */
     @PostMapping("/signup")
@@ -41,39 +54,25 @@ public class JoinController extends ControllerSupport{
     		|| StringUtil.isNullOrEmpty(pvo.getPhoneNo() )
     		)
     	{
-    		return getFailResponse(400, "ÇÊ¼ö°ª ´©¶ô");
+    		return getFailResponse(400, "ï¿½Ê¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
     	}
 
-    	String joinDatetime = DateUtil.getCurrentTime("yyyyMMddHHmmss");
-    	joinDatetime = joinDatetime.substring(2, 8);
-    	Integer hash = ( joinDatetime + "|" + pvo.getUserNm() + "|" + pvo.getUserId() ).hashCode();
 
 
-        final UserInfo user = UserInfo.builder()
-        		.mbrNo("1"+(hash < 0 ? hash * -1 : hash ))
-        		.userNm(pvo.getUserNm())
-        		.userId(pvo.getUserId())
-        		.userPw(pvo.getUserPw())
-        		.phoneNo(pvo.getPhoneNo())
-        		.joinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
-        		.firstJoinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
-        		.validateYn("Y")
-        		.userType("U")
-        		.joinType("U")
-                .build();
+    	try{
+    		joinService.signup(pvo);
+    		return getOkResponse();
+    	} catch(Exception e) {
+    		return getFailResponse();
+    	}
 
-
-        if(userInfoRepository.save(user) != null) {
-        	return getOkResponse();
-        }else {
-        	return getFailResponse();
-        }
 
     }
 
+
     /**
-     * ÀÌ¸ŞÀÏ Áßº¹ È®ÀÎ
-     * @param name
+     * ì´ë©”ì¼ ì¤‘ë³µ í™•ì¸
+     * @param userId
      * @return
      */
     @GetMapping("/checkId/{userId}")
@@ -85,13 +84,51 @@ public class JoinController extends ControllerSupport{
 
     	System.out.println("##########user >> " + userInfo);
 
-
     	CheckIdRVO rvo = new CheckIdRVO();
     	rvo.setCheckIdYn(userInfo != null ? "N" : "Y");
 
 		return getOkResponse(rvo);
 
 	}
+
+    @GetMapping("/mailTest/{userId}")
+    public ResponseEntity<?> mailTest(@PathVariable("userId") String userId) throws Exception{
+
+    	Optional<UserInfo> optUser = userInfoRepository.findByUserId(userId);
+
+    	UserInfo userInfo = null;
+    	if(optUser.isPresent()) userInfo = optUser.get();
+
+    	System.out.println("##########user >> " + userInfo);
+    	System.out.println("##########user >> " + userInfo.getUserId());
+
+
+
+
+
+    	EmailToken emailToken = emailTokenService.createEmailToken(userInfo.getMbrNo(),userInfo.getUserId());
+
+		String message = mailContentBuilder.signupBuild(emailToken.getId());
+		EmailVO emailVO = new EmailVO();
+		emailVO.setReceiverEmail(userInfo.getUserId());
+		emailVO.setSubject("PigSpaceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¯ï¿½ï¿½ï¿½Õ´Ï´ï¿½.");
+		emailVO.setText(message);
+
+        try {
+			emailSenderService.sendEmail(emailVO);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return getFailResponse();
+		}
+    	return getOkResponse();
+    }
+
+    @GetMapping("/exceptionTest")
+    public ResponseEntity<?> exceptionTest(){
+    	throw new PigException("ì—ëŸ¬!");
+    }
+
 
 
 }

@@ -1,4 +1,4 @@
-package com.pigplace.common.vo;
+package com.pigplace.common.support;
 
 
 import lombok.Data;

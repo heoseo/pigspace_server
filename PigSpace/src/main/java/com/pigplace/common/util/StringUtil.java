@@ -3,7 +3,7 @@ package com.pigplace.common.util;
 public class StringUtil {
 
 	/**
-	 * null È¤Àº ºó°ªÀÎÁö °Ë»ç
+	 * null ì´ê±°ë‚˜ ë¹ˆê°’ íŒë‹¨
 	 * @param str
 	 * @return
 	 */

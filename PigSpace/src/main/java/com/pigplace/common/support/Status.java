@@ -1,12 +1,11 @@
-package com.pigplace.common.vo;
+package com.pigplace.common.support;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Status{
-	//code가 key인 상태값
-	public static final Map<Integer, String> StatusCode= 
+	public static final Map<Integer, String> StatusCode=
 			Collections.unmodifiableMap(new HashMap<Integer, String>(){
 				private static final long serialVersionUID = 7835287845816788595L;
 			{
@@ -22,12 +21,11 @@ public class Status{
 				put(600, "DB_ERROR");
 
 			}});
-	
-	//message가 key인 상태값
-	public static final Map<String, Integer> StatusMessage  = 
+
+	public static final Map<String, Integer> StatusMessage  =
 		    Collections.unmodifiableMap(new HashMap<String, Integer>() {
 				private static final long serialVersionUID = 3922431394814449884L;
-			{ 
+			{
 		    	put("OK", 200);
 		    	put("CREATED", 201);
 		    	put("NO_CONTENT", 204);
