@@ -41,10 +41,8 @@ public class JoinController extends ControllerSupport{
 	private final MailContentBuilder mailContentBuilder;
 	private final EmailSenderService emailSenderService;
 
-
-
 	/**
-     * 회원가입
+     * 회원가입 요청
      * @return
      */
     @PostMapping("/signup")
