@@ -1,4 +1,4 @@
-package com.pigspace.comn.controller;
+package com.pigspace.common.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pigspace.common.service.EmailService;
 import com.pigspace.common.support.ControllerSupport;
 import com.pigspace.common.support.ResponseEntity;
-import com.pigspace.comn.service.EmailService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

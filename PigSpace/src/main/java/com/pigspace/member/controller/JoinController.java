@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pigspace.common.entity.EmailToken;
+import com.pigspace.common.entity.UserInfo;
+import com.pigspace.common.repository.UserInfoRepository;
+import com.pigspace.common.service.EmailSenderService;
+import com.pigspace.common.service.EmailTokenService;
 import com.pigspace.common.support.ControllerSupport;
 import com.pigspace.common.support.PigException;
 import com.pigspace.common.support.ResponseEntity;
 import com.pigspace.common.util.StringUtil;
-import com.pigspace.comn.entity.EmailToken;
-import com.pigspace.comn.entity.UserInfo;
-import com.pigspace.comn.repository.UserInfoRepository;
-import com.pigspace.comn.service.EmailSenderService;
-import com.pigspace.comn.service.EmailTokenService;
-import com.pigspace.comn.vo.MailContentBuilder;
+import com.pigspace.common.vo.MailContentBuilder;
 import com.pigspace.member.service.JoinService;
 import com.pigspace.member.vo.CheckIdRVO;
 import com.pigspace.member.vo.EmailVO;
@@ -47,7 +47,6 @@ public class JoinController extends ControllerSupport{
      */
     @PostMapping("/signup")
     public ResponseEntity<?> join(@RequestBody JoinDTO pvo) {
-    	System.out.println("@@@@@@@@@@@@@" + pvo);
 
     	if(StringUtil.isNullOrEmpty(pvo.getUserNm() )
 			|| StringUtil.isNullOrEmpty(pvo.getUserId())
@@ -55,7 +54,7 @@ public class JoinController extends ControllerSupport{
     		|| StringUtil.isNullOrEmpty(pvo.getPhoneNo() )
     		)
     	{
-    		return getFailResponse(400, "�ʼ��� ����");
+    		return getFailResponse(400, "필드값 누락");
     	}
 
 
@@ -112,7 +111,7 @@ public class JoinController extends ControllerSupport{
 		String message = mailContentBuilder.signupBuild(emailToken.getId());
 		EmailVO emailVO = new EmailVO();
 		emailVO.setReceiverEmail(userInfo.getUserId());
-		emailVO.setSubject("PigSpace�� �����Ͻ� ���� ȯ���մϴ�.");
+		emailVO.setSubject("PigSpace 회원가입을 환영합니다.");
 		emailVO.setText(message);
 
         try {

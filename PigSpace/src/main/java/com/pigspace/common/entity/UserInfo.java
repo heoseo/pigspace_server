@@ -1,4 +1,4 @@
-package com.pigspace.comn.entity;
+package com.pigspace.common.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
