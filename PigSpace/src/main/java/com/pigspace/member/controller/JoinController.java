@@ -42,7 +42,6 @@ public class JoinController extends ControllerSupport{
 	private final EmailSenderService emailSenderService;
 
 
-
 	/**
      * 회원가입
      * @return
