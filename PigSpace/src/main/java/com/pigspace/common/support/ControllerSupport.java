@@ -1,6 +1,8 @@
 package com.pigspace.common.support;
 
-public class ControllerSupport {
+public class ControllerSupport extends LogObject{
+
+	private static final long serialVersionUID = 5604045769041690513L;
 
 	/**
 	 * <h1>응답코드와 메세지를 지정하고 data를 담은 Response</h1>
