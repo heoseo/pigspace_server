@@ -1,7 +1,5 @@
 package com.pigspace.member.controller;
 
-import java.util.Optional;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,24 +8,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pigspace.common.entity.UserInfo;
-import com.pigspace.common.repository.UserInfoRepository;
+import com.pigspace.common.service.EmailTokenService;
 import com.pigspace.common.support.ControllerSupport;
 import com.pigspace.common.support.ResponseEntity;
 import com.pigspace.common.util.StringUtil;
+import com.pigspace.member.service.LoginService;
 import com.pigspace.member.vo.LoginDTO;
 import com.pigspace.member.vo.LoginRVO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 
+@Tag(name = "로그인", description = "로그인")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class LoginController extends ControllerSupport{
 
-	private final UserInfoRepository userInfoRepository;
+	private final EmailTokenService emailTokenService;
+	private final LoginService loginService;
 
 
 
@@ -55,9 +62,9 @@ public class LoginController extends ControllerSupport{
 	        JSONObject jsonObj = (JSONObject) obj;
 
 	        //print
-	        System.out.println(jsonObj.get("result")); //sim
-//	        System.out.println(jsonObj.get("userPw")); //simpw
-//	        System.out.println(jsonObj.get("userInfo")); // {"sex":"male","age":50}
+	        debug("result:{}",jsonObj.get("result")); //sim
+//	        debug(jsonObj.get("userPw")); //simpw
+//	        debug(jsonObj.get("userInfo")); // {"sex":"male","age":50}
 	        return getOkResponse(200, "OK", obj);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -73,24 +80,35 @@ public class LoginController extends ControllerSupport{
 	}
 
 
+	/**
+     * 로그인
+     */
+	@Operation(summary = "로그인", description = "<strong>로그인</strong>")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "회원 조회 성공", content = @Content(schema = @Schema(implementation = LoginRVO.class)))})
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginDTO pvo){
 
-		UserInfo user = null;
 		LoginRVO loginRVO = new LoginRVO();
 
-		Optional<UserInfo> optUser = userInfoRepository.findByUserIdAndUserPw(pvo.getUserId(), pvo.getUserPw());
+		UserInfo user = null;
 
-		if(optUser.isPresent()) {
-			user = optUser.get();
-			System.out.println("@@@@@@@@@@@@@@@@"+user);
-			loginRVO.setMbrNo(user.getMbrNo());
-			loginRVO.setVerifiedYN(user.getVerified() ? "Y" : "N");
-			loginRVO.setNickSetYN(StringUtil.isNullOrEmpty(user.getNickname()) ? "N" : "Y");
-			return getOkResponse(loginRVO);
-		}else
-			return getFailResponse(400, "로그인 정보 없음");
+		try {
+			user = loginService.login(pvo.getUserId(), pvo.getUserPw());
 
 
+			if(user != null) {
+
+				loginRVO.setMbrNo(user.getMbrNo());
+				loginRVO.setExpiredYN(emailTokenService.checkExpired(user.getMbrNo(), "signup") ? "Y" : "N");
+				loginRVO.setVerifiedYN(user.getIsVerified() ? "Y" : "N");
+				loginRVO.setNickSetYN(StringUtil.isNullOrEmpty(user.getNickname()) ? "N" : "Y");
+			}else
+				return getFailResponse(400, "로그인 정보 없음");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return getOkResponse(loginRVO);
 	}
 }

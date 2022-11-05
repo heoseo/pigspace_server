@@ -3,17 +3,15 @@ package com.pigspace.common.support;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.logging.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
-public class ExceptionController {
-	@SuppressWarnings("unused")
-	private static final Logger LOG = Logger.getLogger(ExceptionController.class);
+public class ExceptionController extends LogObject{
+
+	private static final long serialVersionUID = 9128046630036041496L;
+
 //	@Autowired
 //	private ExceptionService exceptionService;
 
@@ -26,12 +24,28 @@ public class ExceptionController {
 //				HttpStatus.METHOD_NOT_ALLOWED);
 //	}
 
+	/**
+	 * 404
+	 * @param e
+	 * @param request
+	 * @return
+	 */
 	@ExceptionHandler(NoHandlerFoundException.class)
-	protected ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException e,
+	protected ErrorResponse handleNoHandlerFoundException(NoHandlerFoundException e,
 			HttpServletRequest request) {
-//		exceptionService.errorLog(e, request);
-		return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Not Found", e.getMessage()),
-				HttpStatus.NOT_FOUND);
+		return new ErrorResponse(ErrorCode.NOT_FOUND);
+	}
+
+	/**
+	 * PigException
+	 * @param e
+	 * @param request
+	 * @return
+	 */
+	@ExceptionHandler(Exception.class)
+	protected ErrorResponse handlePigException(Exception e,
+			HttpServletRequest request) {
+		return new ErrorResponse(ErrorCode.INTER_SERVER_ERROR, e.getMessage());
 	}
 
 //	@ExceptionHandler(Exception.class)

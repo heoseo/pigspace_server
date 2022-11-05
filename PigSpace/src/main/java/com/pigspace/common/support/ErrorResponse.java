@@ -1,19 +1,22 @@
 package com.pigspace.common.support;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class ErrorResponse {
-    private int status;
+	private int code;
     private String message;
-    private String code;
+    private String error;
 
     public ErrorResponse(ErrorCode errorCode){
-        this.status = errorCode.getStatus();
+    	this.code = errorCode.getCode();
         this.message = errorCode.getMessage();
-        this.code = errorCode.getErrorCode();
+    }
+
+    public ErrorResponse(ErrorCode errorCode, String error) {
+    	this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
+        this.error = error;
     }
 
 }

@@ -24,6 +24,13 @@ import com.pigspace.member.vo.CheckIdRVO;
 import com.pigspace.member.vo.EmailVO;
 import com.pigspace.member.vo.JoinDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +39,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class JoinController extends ControllerSupport{
+
+	private static final long serialVersionUID = -2606895170405613501L;
 
 	private final UserInfoRepository userInfoRepository;
 
@@ -43,8 +52,8 @@ public class JoinController extends ControllerSupport{
 
 	/**
      * 회원가입 요청
-     * @return
      */
+	@Operation(summary = "회원가입 요청", description = "<strong>회원가입 요청</strong>\n\n200 - Y:사용가능 N: 사용불가\n\n400 - 필수값 누락\n\n500 - Server Error")
     @PostMapping("/signup")
     public ResponseEntity<?> join(@RequestBody JoinDTO pvo) {
 
@@ -54,7 +63,7 @@ public class JoinController extends ControllerSupport{
     		|| StringUtil.isNullOrEmpty(pvo.getPhoneNo() )
     		)
     	{
-    		return getFailResponse(400, "필드값 누락");
+    		return getFailResponse(400, "필수값 누락");
     	}
 
 
@@ -63,7 +72,7 @@ public class JoinController extends ControllerSupport{
     		joinService.signup(pvo);
     		return getOkResponse();
     	} catch(Exception e) {
-    		return getFailResponse();
+    		return getFailResponse(e.getMessage());
     	}
 
 
@@ -71,21 +80,31 @@ public class JoinController extends ControllerSupport{
 
 
     /**
-     * 이메일 중복 확인
+     * 아이디 중복 확인
      * @param userId
      * @return
      */
+	@Operation(summary = "아이디 중복 확인", description = "<strong>아이디 중복 확인</strong>")
+	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "이메일 중복 확인 성공", content = @Content(schema = @Schema(implementation = CheckIdRVO.class)))})
+	@Parameters({@Parameter(name = "userId", description = "중복 확인할 아이디", example = "test@gmail.com")	})
     @GetMapping("/checkId/{userId}")
 	public ResponseEntity<?> getTest(@PathVariable("userId") String userId) {
-    	Optional<UserInfo> optUser = userInfoRepository.findByUserId(userId);
 
-    	UserInfo userInfo = null;
-    	if(optUser.isPresent()) userInfo = optUser.get();
+		if(StringUtil.isNullOrEmpty(userId))
+			return getFailResponse(400, "필수값 누락");
 
-    	System.out.println("##########user >> " + userInfo);
+
 
     	CheckIdRVO rvo = new CheckIdRVO();
-    	rvo.setCheckIdYn(userInfo != null ? "N" : "Y");
+    	try {
+			rvo.setCheckIdYn(joinService.checkId(userId));
+		} catch (Exception e) {
+			return getFailResponse(e.getMessage());
+		}
+
+    	debug("debug!!!!!!!!!");
+    	debug("debug@@@@@@@@@ {} {}", rvo, "asdf");
+    	info("####### info user >> {}", rvo);
 
 		return getOkResponse(rvo);
 
@@ -99,14 +118,14 @@ public class JoinController extends ControllerSupport{
     	UserInfo userInfo = null;
     	if(optUser.isPresent()) userInfo = optUser.get();
 
-    	System.out.println("##########user >> " + userInfo);
-    	System.out.println("##########user >> " + userInfo.getUserId());
+    	debug("##########user >> " + userInfo);
+    	debug("##########user >> " + userInfo.getUserId());
 
 
 
 
 
-    	EmailToken emailToken = emailTokenService.createEmailToken(userInfo.getMbrNo(),userInfo.getUserId());
+    	EmailToken emailToken = emailTokenService.createEmailToken(userInfo.getMbrNo(),userInfo.getUserId(), 1, "test");
 
 		String message = mailContentBuilder.signupBuild(emailToken.getId());
 		EmailVO emailVO = new EmailVO();
@@ -126,7 +145,12 @@ public class JoinController extends ControllerSupport{
 
     @GetMapping("/exceptionTest")
     public ResponseEntity<?> exceptionTest(){
-    	throw new PigException("에러!");
+    	try{
+    		throw new PigException("에러!");
+    	}catch(Exception e) {
+    		error(e.getMessage());
+    		throw e;
+    	}
     }
 
 

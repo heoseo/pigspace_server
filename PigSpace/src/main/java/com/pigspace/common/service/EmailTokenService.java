@@ -1,13 +1,16 @@
 package com.pigspace.common.service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.pigspace.common.entity.EmailToken;
 import com.pigspace.common.repository.EmailTokenRepository;
+import com.pigspace.common.support.PigException;
+import com.pigspace.common.support.ServiceSupport;
+import com.pigspace.common.util.DateUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,20 +18,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class EmailTokenService {
+public class EmailTokenService extends ServiceSupport{
+
+	private static final long serialVersionUID = 1925260844761833096L;
 
 	private final EmailTokenRepository emailTokenRepository;
 
 
 	// 이메일 인증 토큰 생성
-	public EmailToken createEmailToken(String mbrNo, String receiverEmail) {
+	public EmailToken createEmailToken(String mbrNo, String receiverEmail, int expiredDay, String verifyType) {
 
 		Assert.notNull(mbrNo, "mbrNo는 필수입니다");
 		Assert.hasText(receiverEmail, "receiverEmail은 필수입니다.");
 
 		// 이메일 토큰 저장
-		EmailToken emailToken = EmailToken.createEmailToken(mbrNo);
-		System.out.println("EmailToken >> " + emailToken);
+		EmailToken emailToken = EmailToken.createEmailToken(mbrNo, expiredDay, verifyType);
+		debug("EmailToken >> " + emailToken);
 		emailTokenRepository.save(emailToken);
 
 
@@ -37,12 +42,50 @@ public class EmailTokenService {
 	}
 
 	// 유효한 토큰 가져오기
-	public EmailToken findByIdAndExpirationDateAfterAndExpired(String emailTokenId) throws Exception {
-		Optional<EmailToken> emailToken = emailTokenRepository
-			.findByIdAndExpirationDateAfterAndExpired(emailTokenId, LocalDateTime.now(), false);
+	@Transactional
+	public EmailToken findByEmailTokenId(String emailTokenId, String verifyType) throws Exception {
 
-		// 토큰이 없다면 예외 발생
-		return emailToken.orElseThrow(() -> new Exception("BaseResponseStatus.DATABASE_ERROR"));
+		Optional<EmailToken> optEmailToken = emailTokenRepository.findByIdAndVerifyType(emailTokenId, verifyType);
+
+		EmailToken emailToken = null;
+		try{
+			if(optEmailToken.isPresent()) emailToken = optEmailToken.get();
+			else throw new PigException("일치하는 이메일 토큰 미존재");
+
+			if(emailToken.getExpirationDatetime().compareTo(DateUtil.getCurrentTime("yyyyMMddHHmmss")) < 0)
+			{
+				emailToken.setIsExpired();
+				throw new PigException("메일인증 만료됨");
+			}
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return emailToken;
+
+	}
+
+	// 인증 메일 만료 여부 확인
+	@Transactional
+	public boolean checkExpired(String mbrNo, String verifyType) throws Exception{
+
+		Optional<EmailToken> optEmailToken = emailTokenRepository.findByMbrNoAndVerifyType(mbrNo, verifyType);
+
+		EmailToken emailToken = null;
+		if(optEmailToken.isPresent()) emailToken = optEmailToken.get();
+
+		if(emailToken == null) return false;
+
+
+		//만료됐으면 만료여부 Y 업데이트.
+		if(emailToken.getExpirationDatetime().compareTo(DateUtil.getCurrentTime("yyyyMMddHHmmss")) < 0)
+		{
+			emailToken.setIsExpired();
+		}
+
+		return emailToken.getIsExpired()? true : false;
 	}
 
 }

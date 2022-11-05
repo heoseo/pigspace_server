@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pigspace.common.entity.EmailToken;
 import com.pigspace.common.entity.UserInfo;
 import com.pigspace.common.repository.UserInfoRepository;
+import com.pigspace.common.support.PigException;
+import com.pigspace.common.support.ServiceSupport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,26 +19,28 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 //https://interconnection.tistory.com/m/123
 @Transactional(readOnly = true)
-public class EmailService {
+public class EmailService extends ServiceSupport{
+
+	private static final long serialVersionUID = 8441672845393206241L;
 
 	private final EmailTokenService emailTokenService;
 	private final UserInfoRepository userInfoRepository;
 
-//	@Override
 	@Transactional
-	public boolean verifyEmail(String token) throws Exception {
-		EmailToken findEmailToken = emailTokenService.findByIdAndExpirationDateAfterAndExpired(token);
+	public boolean verifyEmail(String token, String verifyType) throws Exception {
+		EmailToken findEmailToken = null;
+
+		findEmailToken = emailTokenService.findByEmailTokenId(token, verifyType);
 
 		Optional<UserInfo> findMember = userInfoRepository.findByMbrNo(findEmailToken.getMbrNo());
-		findEmailToken.setTokenToUsed();
+		findEmailToken.setIsExpired();
 
 		if (findMember.isPresent()) {
 			UserInfo member = findMember.get();
-//			https://blossom6729.tistory.com/m/14
-			member.setVerified();
+			member.setIsVerified();
 			return true;
 		} else {
-			throw new Exception("DATABASE_ERROR");
+			throw new PigException("이메일 인증 토큰과 일치하는 회원정보 없음");
 		}
 	}
 }

@@ -1,10 +1,11 @@
 package com.pigspace.common.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.hibernate.annotations.ColumnDefault;
+import com.pigspace.common.support.BooleanToYNConverter;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name="USER_INFO") // ���̺� ���� �ۼ�
+@Entity(name="USER_INFO")
 public class UserInfo {
 
 
@@ -45,14 +46,15 @@ public class UserInfo {
     @Column
     private String profileImg;
 
-    @Column
+    @Column(nullable = false, length = 14)
     private String joinDatetime;
 
-    @Column
+    @Column(nullable = false, length = 14)
     private String firstJoinDatetime;
 
-    @Column
-    private String validateYn;
+    @Column(nullable = false, length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean isValid;
 
     @Column
     private String userType;
@@ -60,12 +62,12 @@ public class UserInfo {
     @Column
     private String joinType;
 
-    @Column
-    @ColumnDefault("0") //default 0
-    private Boolean verified;
+    @Column(nullable = false, length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean isVerified;
 
-    public void setVerified() {
-    	this.verified = true;
+    public void setIsVerified() {
+    	this.isVerified = true;
     }
 
 }
