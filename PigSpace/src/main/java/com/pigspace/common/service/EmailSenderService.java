@@ -8,13 +8,16 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.pigspace.common.support.PigException;
+import com.pigspace.common.support.ServiceSupport;
 import com.pigspace.member.vo.EmailVO;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EmailSenderService {
+public class EmailSenderService extends ServiceSupport{
+
+	private static final long serialVersionUID = 8750303270298680716L;
 
 	private final JavaMailSender javaMailSender;
 
@@ -29,7 +32,7 @@ public class EmailSenderService {
             messageHelper.setSubject(emailVO.getSubject());
             messageHelper.setText(emailVO.getText(), true);
 
-            System.out.println("##############"+emailVO.getText());
+            debug("##############"+emailVO.getText());
         };
 
         try {

@@ -1,7 +1,10 @@
 package com.pigspace.member.service;
 
+import java.util.Optional;
+
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pigspace.common.entity.EmailToken;
 import com.pigspace.common.entity.UserInfo;
@@ -9,6 +12,7 @@ import com.pigspace.common.repository.UserInfoRepository;
 import com.pigspace.common.service.EmailSenderService;
 import com.pigspace.common.service.EmailTokenService;
 import com.pigspace.common.support.PigException;
+import com.pigspace.common.support.ServiceSupport;
 import com.pigspace.common.util.DateUtil;
 import com.pigspace.common.vo.MailContentBuilder;
 import com.pigspace.member.vo.EmailVO;
@@ -19,7 +23,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @EnableAsync
 @RequiredArgsConstructor
-public class JoinService {
+public class JoinService extends ServiceSupport{
+
+	private static final long serialVersionUID = 5393706656774430669L;
 
 	private final UserInfoRepository userInfoRepository;
 
@@ -27,6 +33,12 @@ public class JoinService {
 	private final EmailSenderService emailSenderService;
 	private final MailContentBuilder mailContentBuilder;
 
+	/**
+	 * 회원가입 요청
+	 * @param pvo
+	 * @throws Exception
+	 */
+	@Transactional
 	public void signup(JoinDTO pvo) throws Exception{
 		String joinDatetime = DateUtil.getCurrentTime("yyyyMMddHHmmss");
     	joinDatetime = joinDatetime.substring(2, 8);
@@ -42,10 +54,10 @@ public class JoinService {
         		.phoneNo(pvo.getPhoneNo())
         		.joinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
         		.firstJoinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
-        		.validateYn("Y")
+        		.isValid(true)
         		.userType("U")
         		.joinType("U")
-        		.verified(false)
+        		.isVerified(false)
                 .build();
 
         UserInfo userInfo = userInfoRepository.save(user);
@@ -54,7 +66,8 @@ public class JoinService {
 
 
         //토큰 생성
-        EmailToken emailToken = emailTokenService.createEmailToken(user.getMbrNo(), user.getUserId());
+        debug(DateUtil.getCurrentTimePlusDays("yyyyMMddHHmmss", 1));
+        EmailToken emailToken = emailTokenService.createEmailToken(user.getMbrNo(), user.getUserId(), 1, "signup");
 
 		String message = mailContentBuilder.signupBuild(emailToken.getId());
 
@@ -66,9 +79,27 @@ public class JoinService {
         try {
 			emailSenderService.sendEmail(emailVO);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw e;
 		}
+	}
+
+	/**
+	 * 아이디 중복 확인
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public String checkId(String userId) throws Exception{
+		//TODO 탈퇴한 메일로 재가입 가능하도록 하는지
+		Optional<UserInfo> optUser = userInfoRepository.findByUserId(userId);
+
+    	UserInfo userInfo = null;
+    	if(optUser.isPresent()) userInfo = optUser.get();
+    	debug("userinfo:{}",userInfo);
+    	debug(DateUtil.getCurrentTimePlusDays("yyyyMMddHHmmss", 1));
+
+
+    	return userInfo != null ? "N" : "Y";
 	}
 }

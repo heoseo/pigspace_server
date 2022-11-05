@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.pigspace.common.entity.EmailToken;
 
 public interface EmailTokenRepository extends JpaRepository<EmailToken, String> {
-	Optional<EmailToken> findByIdAndExpirationDateAfterAndExpired(String emailTokenId, LocalDateTime now, boolean expired);
+	Optional<EmailToken> findByIdAndVerifyType(String emailTokenId, String verifyType);
+	Optional<EmailToken> findByMbrNoAndVerifyType(String mbrNo, String verifyType);
+	Optional<EmailToken> findByIdAndExpirationDatetimeAndIsExpired(String emailTokenId, LocalDateTime now, boolean isExpired);
 }
