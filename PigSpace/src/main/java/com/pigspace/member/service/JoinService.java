@@ -1,5 +1,6 @@
 package com.pigspace.member.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -11,9 +12,9 @@ import com.pigspace.common.entity.UserInfo;
 import com.pigspace.common.repository.UserInfoRepository;
 import com.pigspace.common.service.EmailSenderService;
 import com.pigspace.common.service.EmailTokenService;
-import com.pigspace.common.support.PigException;
 import com.pigspace.common.support.ServiceSupport;
 import com.pigspace.common.util.DateUtil;
+import com.pigspace.common.util.HashUtil;
 import com.pigspace.common.vo.MailContentBuilder;
 import com.pigspace.member.vo.EmailVO;
 import com.pigspace.member.vo.JoinDTO;
@@ -40,9 +41,7 @@ public class JoinService extends ServiceSupport{
 	 */
 	@Transactional
 	public void signup(JoinDTO pvo) throws Exception{
-		String joinDatetime = DateUtil.getCurrentTime("yyyyMMddHHmmss");
-    	joinDatetime = joinDatetime.substring(2, 8);
-    	Integer hash = ( joinDatetime + "|" + pvo.getUserNm() + "|" + pvo.getUserId() ).hashCode();
+    	Integer hash = HashUtil.makeMbrHash(pvo.getUserNm(), pvo.getUserId(), pvo.getPhoneNo());
 
 
     	// UserInfo
@@ -54,15 +53,15 @@ public class JoinService extends ServiceSupport{
         		.phoneNo(pvo.getPhoneNo())
         		.joinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
         		.firstJoinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
-        		.isValid(true)
+        		.validYn(true)
         		.userType("U")
         		.joinType("U")
-        		.isVerified(false)
+        		.verifiedYn(false)
+        		.createdDate(LocalDateTime.now())
                 .build();
 
-        UserInfo userInfo = userInfoRepository.save(user);
-        if(userInfo == null)
-        	throw new PigException("UserInfo 없음");
+        //재가입 시 createDate가 있으므로 update됨.
+        userInfoRepository.save(user);
 
 
         //토큰 생성
@@ -91,7 +90,7 @@ public class JoinService extends ServiceSupport{
 	 * @throws Exception
 	 */
 	public String checkId(String userId) throws Exception{
-		//TODO 탈퇴한 메일로 재가입 가능하도록 하는지
+		//TODO 인증 전 일경우에도 검색됨.
 		Optional<UserInfo> optUser = userInfoRepository.findByUserId(userId);
 
     	UserInfo userInfo = null;
@@ -99,7 +98,14 @@ public class JoinService extends ServiceSupport{
     	debug("userinfo:{}",userInfo);
     	debug(DateUtil.getCurrentTimePlusDays("yyyyMMddHHmmss", 1));
 
+    	if(userInfo == null)
+    		return "Y";		// 입력된 정보 없으므로 가입 가능.
+    	else {
+    		if(!userInfo.getValidYn())
+    			return "Y";	// 탈퇴한 메일이므로 가입 가능.
+    		else
+    			return "N";	// 아직 유효한 아이디이므로 가입 불가.
+    	}
 
-    	return userInfo != null ? "N" : "Y";
 	}
 }

@@ -1,11 +1,19 @@
 package com.pigspace.common.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.pigspace.common.support.BooleanToYNConverter;
+import com.pigspace.common.util.HashUtil;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,9 +27,12 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Entity(name="USER_INFO")
-public class UserInfo {
+public class UserInfo implements Persistable<Integer> {
 
+	@CreatedDate
+    private LocalDateTime createdDate;
 
 	@Id
 	private String mbrNo;
@@ -54,7 +65,7 @@ public class UserInfo {
 
     @Column(nullable = false, length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean isValid;
+    private Boolean validYn;
 
     @Column
     private String userType;
@@ -64,10 +75,23 @@ public class UserInfo {
 
     @Column(nullable = false, length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean isVerified;
+    private Boolean verifiedYn;
 
-    public void setIsVerified() {
-    	this.isVerified = true;
+    public void setVerifiedYn() {
+    	this.verifiedYn = true;
     }
+
+	@Override
+	public Integer getId() {
+		return HashUtil.makeMbrHash(this.userNm, this.userId, this.phoneNo);
+	}
+
+	@Override
+	public boolean isNew() {
+		// TODO Auto-generated method stub
+		System.out.println("@@@@@@@@@@@@@getId" + getId());
+		System.out.println("@@@@@@@@@@@@@createDate" + createdDate);
+		return createdDate == null;
+	}
 
 }

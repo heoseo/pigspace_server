@@ -13,9 +13,7 @@ import com.pigspace.common.support.ServiceSupport;
 import com.pigspace.common.util.DateUtil;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class EmailTokenService extends ServiceSupport{
@@ -54,7 +52,6 @@ public class EmailTokenService extends ServiceSupport{
 
 			if(emailToken.getExpirationDatetime().compareTo(DateUtil.getCurrentTime("yyyyMMddHHmmss")) < 0)
 			{
-				emailToken.setIsExpired();
 				throw new PigException("메일인증 만료됨");
 			}
 
@@ -76,16 +73,17 @@ public class EmailTokenService extends ServiceSupport{
 		EmailToken emailToken = null;
 		if(optEmailToken.isPresent()) emailToken = optEmailToken.get();
 
-		if(emailToken == null) return false;
-
-
-		//만료됐으면 만료여부 Y 업데이트.
-		if(emailToken.getExpirationDatetime().compareTo(DateUtil.getCurrentTime("yyyyMMddHHmmss")) < 0)
-		{
-			emailToken.setIsExpired();
+		debug("@@@@@@@@@@@@@@@@@@ emailToken {}", emailToken);
+		if(emailToken != null) {
+			return emailToken.getExpirationDatetime().compareTo(DateUtil.getCurrentTime("yyyyMMddHHmmss")) < 0
+					? true : false;
+		}else {
+			// 이메일 토큰 정보 없으면 true
+			return true;
 		}
 
-		return emailToken.getIsExpired()? true : false;
+
+
 	}
 
 }
