@@ -1,14 +1,12 @@
 package com.pigspace.common.entity;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.pigspace.common.support.BooleanToYNConverter;
 import com.pigspace.common.util.DateUtil;
 
 import lombok.AccessLevel;
@@ -38,10 +36,6 @@ public class EmailToken {
 	@Column(nullable = false, length = 14)
 	private String expirationDatetime;
 
-	@Column(nullable = false, length = 1)
-	@Convert(converter = BooleanToYNConverter.class)
-	private Boolean isExpired;
-
 	@Column
 	private String verifyType;
 
@@ -53,16 +47,10 @@ public class EmailToken {
 		EmailToken emailToken = new EmailToken();
 		//TODO 추후 메일인증 또 필요하면 final 변수 추가 선언 필요
 		emailToken.expirationDatetime = DateUtil.getCurrentTimePlusDays("yyyyMMddHHmmss", expiredDay);
-		emailToken.isExpired = true;
 		emailToken.mbrNo = mbrNo;
 		emailToken.verifyType = verifyType;
 
 		return emailToken;
-	}
-
-
-	public void setIsExpired() {
-		this.isExpired = true;
 	}
 
 

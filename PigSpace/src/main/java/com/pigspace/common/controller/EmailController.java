@@ -11,14 +11,14 @@ import com.pigspace.common.support.ControllerSupport;
 import com.pigspace.common.support.ResponseEntity;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/member")
 public class EmailController extends ControllerSupport{
+
+	private static final long serialVersionUID = 5854788599284246080L;
 
 	private final EmailService emailService;
 

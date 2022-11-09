@@ -32,7 +32,6 @@ public class EmailSenderService extends ServiceSupport{
             messageHelper.setSubject(emailVO.getSubject());
             messageHelper.setText(emailVO.getText(), true);
 
-            debug("##############"+emailVO.getText());
         };
 
         try {

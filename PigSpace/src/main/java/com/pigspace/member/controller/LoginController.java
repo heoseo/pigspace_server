@@ -101,7 +101,7 @@ public class LoginController extends ControllerSupport{
 
 				loginRVO.setMbrNo(user.getMbrNo());
 				loginRVO.setExpiredYN(emailTokenService.checkExpired(user.getMbrNo(), "signup") ? "Y" : "N");
-				loginRVO.setVerifiedYN(user.getIsVerified() ? "Y" : "N");
+				loginRVO.setVerifiedYN(user.getVerifiedYn() ? "Y" : "N");
 				loginRVO.setNickSetYN(StringUtil.isNullOrEmpty(user.getNickname()) ? "N" : "Y");
 			}else
 				return getFailResponse(400, "로그인 정보 없음");
