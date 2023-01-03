@@ -57,21 +57,21 @@ public class JoinController extends ControllerSupport{
     @PostMapping("/signup")
     public ResponseEntity<?> join(@RequestBody JoinDTO pvo) {
 
-    	if(StringUtil.isNullOrEmpty(pvo.getUserNm() )
-			|| StringUtil.isNullOrEmpty(pvo.getUserId())
-    		|| StringUtil.isNullOrEmpty(pvo.getUserPw() )
-    		|| StringUtil.isNullOrEmpty(pvo.getPhoneNo() )
-    		)
-    	{
-    		return getFailResponse(400, "필수값 누락");
-    	}
+		try{
+			debug("@@@@@@@@@@@@ {}", pvo);
+	    	if(StringUtil.isNullOrEmpty(pvo.getUserNm() )
+				|| StringUtil.isNullOrEmpty(pvo.getUserId())
+	    		|| StringUtil.isNullOrEmpty(pvo.getUserPw() )
+	    		|| StringUtil.isNullOrEmpty(pvo.getPhoneNo() )
+	    		)
+	    	{
+	    		return getFailResponse(400, "필수값 누락");
+	    	}
 
-
-
-    	try{
     		joinService.signup(pvo);
     		return getOkResponse();
     	} catch(Exception e) {
+			error(e.getMessage(), e);
     		return getFailResponse(e.getMessage());
     	}
 
@@ -127,7 +127,7 @@ public class JoinController extends ControllerSupport{
 
     	EmailToken emailToken = emailTokenService.createEmailToken(userInfo.getMbrNo(),userInfo.getUserId(), 1, "test");
 
-		String message = mailContentBuilder.signupBuild(emailToken.getId());
+		String message = mailContentBuilder.signupBuild(emailToken.getToken());
 		EmailVO emailVO = new EmailVO();
 		emailVO.setReceiverEmail(userInfo.getUserId());
 		emailVO.setSubject("PigSpace 회원가입을 환영합니다.");

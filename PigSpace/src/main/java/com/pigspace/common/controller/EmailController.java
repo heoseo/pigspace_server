@@ -25,7 +25,7 @@ public class EmailController extends ControllerSupport{
 	@GetMapping("/confirm-email/{tokenId}")
 	public ResponseEntity<?> viewConfirmEmail(@PathVariable("tokenId") String tokenId) {
 		try {
-			emailService.verifyEmail(tokenId, "signup");
+			emailService.verifyEmail(tokenId, "S");
 		} catch (Exception e) {
 			return getFailResponse(400, "인증 실패. 재가입 필요");
 		}

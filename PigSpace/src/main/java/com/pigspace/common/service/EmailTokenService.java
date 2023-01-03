@@ -43,7 +43,7 @@ public class EmailTokenService extends ServiceSupport{
 	@Transactional
 	public EmailToken findByEmailTokenId(String emailTokenId, String verifyType) throws Exception {
 
-		Optional<EmailToken> optEmailToken = emailTokenRepository.findByIdAndVerifyType(emailTokenId, verifyType);
+		Optional<EmailToken> optEmailToken = emailTokenRepository.findByTokenAndVerifyType(emailTokenId, verifyType);
 
 		EmailToken emailToken = null;
 		try{

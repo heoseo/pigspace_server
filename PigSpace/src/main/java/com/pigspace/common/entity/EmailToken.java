@@ -6,8 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.domain.Persistable;
 
 import com.pigspace.common.util.DateUtil;
+import com.pigspace.common.util.HashUtil;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,24 +25,27 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name="EMAIL_TOKEN")
-public class EmailToken {
+public class EmailToken implements Persistable<Integer>{
 
 	private static final long EMAIL_TOKEN_EXPIRATION_TIME_VALUE = 5L;
 
 	@Id
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(length = 36)
-	private String id;
+	@Column(nullable= false, length = 36)
+	private String token;
 
 	@Column(nullable = false, length = 14)
 	private String expirationDatetime;
 
-	@Column
+	@Column(nullable = false, length = 1)
 	private String verifyType;
 
-	@Column
+	@Column(nullable = false)
 	private String mbrNo;
+
+	@Column(nullable = false, length = 14)
+	private String createDatetime;
 
 
 	public static EmailToken createEmailToken(String mbrNo, int expiredDay, String verifyType) {
@@ -51,6 +56,18 @@ public class EmailToken {
 		emailToken.verifyType = verifyType;
 
 		return emailToken;
+	}
+
+
+	@Override
+	public Integer getId() {
+		return HashUtil.makeHash(this.mbrNo, this.verifyType);
+	}
+
+
+	@Override
+	public boolean isNew() {
+		return createDatetime == null;
 	}
 
 

@@ -1,13 +1,12 @@
 package com.pigspace.member.service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pigspace.common.entity.EmailToken;
 import com.pigspace.common.entity.UserInfo;
 import com.pigspace.common.repository.UserInfoRepository;
 import com.pigspace.common.service.EmailSenderService;
@@ -16,7 +15,6 @@ import com.pigspace.common.support.ServiceSupport;
 import com.pigspace.common.util.DateUtil;
 import com.pigspace.common.util.HashUtil;
 import com.pigspace.common.vo.MailContentBuilder;
-import com.pigspace.member.vo.EmailVO;
 import com.pigspace.member.vo.JoinDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -41,44 +39,48 @@ public class JoinService extends ServiceSupport{
 	 */
 	@Transactional
 	public void signup(JoinDTO pvo) throws Exception{
-    	Integer hash = HashUtil.makeMbrHash(pvo.getUserNm(), pvo.getUserId(), pvo.getPhoneNo());
+		try {
+	    	Integer hash = HashUtil.makeHash(pvo.getUserNm(), pvo.getUserId(), pvo.getPhoneNo());
 
 
-    	// UserInfo
-        final UserInfo user = UserInfo.builder()
-        		.mbrNo(DateUtil.getCurrentTime("yyMMdd")+(hash < 0 ? hash * -1 : hash ))
-        		.userNm(pvo.getUserNm())
-        		.userId(pvo.getUserId())
-        		.userPw(pvo.getUserPw())
-        		.phoneNo(pvo.getPhoneNo())
-        		.joinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
-        		.firstJoinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
-        		.validYn(true)
-        		.userType("U")
-        		.joinType("U")
-        		.verifiedYn(false)
-        		.createdDate(LocalDateTime.now())
-                .build();
+	    	// UserInfo
+	        final UserInfo user = UserInfo.builder()
+	        		.mbrNo(DateUtil.getCurrentTime("yyMMdd")+(hash < 0 ? hash * -1 : hash ))
+	        		.userNm(pvo.getUserNm())
+	        		.userId(pvo.getUserId())
+	        		.userPw(pvo.getUserPw())
+	        		.phoneNo(pvo.getPhoneNo())
+	        		.joinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
+	        		.firstJoinDatetime(DateUtil.getCurrentTime("yyyyMMddHHmmss"))
+	        		.validYn(true)
+	        		.userType("U")
+	        		.joinType("U")
+	        		.verifiedYn(false)
+//	        		.isCreateMode(false)	// false로 하면 update하란 뜻이므로
+	                .build();
 
-        //재가입 시 createDate가 있으므로 update됨.
-        userInfoRepository.save(user);
+	        debug("######## {}", user);
+	        debug("######## {}", user.getCreatedDate());
+
+	        // isCreateMode = true 이므로 isNew => 무조건 insert => 에러 처리 필요
+	        userInfoRepository.save(user);
 
 
-        //토큰 생성
-        debug(DateUtil.getCurrentTimePlusDays("yyyyMMddHHmmss", 1));
-        EmailToken emailToken = emailTokenService.createEmailToken(user.getMbrNo(), user.getUserId(), 1, "signup");
-
-		String message = mailContentBuilder.signupBuild(emailToken.getId());
-
-		EmailVO emailVO = new EmailVO();
-		emailVO.setReceiverEmail(user.getUserId());
-		emailVO.setSubject("PigSpace가입을 환영합니다.");
-		emailVO.setText(message);
-
-        try {
-			emailSenderService.sendEmail(emailVO);
-		} catch (Exception e) {
-			e.printStackTrace();
+	//        //토큰 생성
+	//        debug(DateUtil.getCurrentTimePlusDays("yyyyMMddHHmmss", 1));
+	//        EmailToken emailToken = emailTokenService.createEmailToken(user.getMbrNo(), user.getUserId(), 1, "S");
+	//
+	//		String message = mailContentBuilder.signupBuild(emailToken.getToken());
+	//
+	//		EmailVO emailVO = new EmailVO();
+	//		emailVO.setReceiverEmail(user.getUserId());
+	//		emailVO.setSubject("PigSpace가입을 환영합니다.");
+	//		emailVO.setText(message);
+//
+//			emailSenderService.sendEmail(emailVO);
+		} catch(DataIntegrityViolationException e) {
+			debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@ DataIntegrityViolationException");
+    	} catch (Exception e) {
 			throw e;
 		}
 	}

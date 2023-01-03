@@ -33,7 +33,10 @@ import net.minidev.json.parser.ParseException;
 @RequestMapping("/member")
 public class LoginController extends ControllerSupport{
 
+	private static final long serialVersionUID = -6619689232216657342L;
+
 	private final EmailTokenService emailTokenService;
+
 	private final LoginService loginService;
 
 
@@ -100,7 +103,7 @@ public class LoginController extends ControllerSupport{
 			if(user != null) {
 
 				loginRVO.setMbrNo(user.getMbrNo());
-				loginRVO.setExpiredYN(emailTokenService.checkExpired(user.getMbrNo(), "signup") ? "Y" : "N");
+				loginRVO.setExpiredYN(emailTokenService.checkExpired(user.getMbrNo(), "S") ? "Y" : "N");
 				loginRVO.setVerifiedYN(user.getVerifiedYn() ? "Y" : "N");
 				loginRVO.setNickSetYN(StringUtil.isNullOrEmpty(user.getNickname()) ? "N" : "Y");
 			}else

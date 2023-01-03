@@ -28,6 +28,10 @@ public class LogObject implements Serializable {
 		initLogger();
 		logger.error(message, objects);
 	}
+	public void error(String message, Throwable t) {
+		initLogger();
+		logger.error(message, t);
+	}
 
 	public void debug(String message){
 		initLogger();

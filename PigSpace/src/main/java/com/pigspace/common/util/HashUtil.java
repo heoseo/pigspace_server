@@ -7,17 +7,18 @@ public class HashUtil extends LogObject{
 	private static final long serialVersionUID = -4010354876199810575L;
 
 	/**
-	 * <h1>회원 식별 번호</h1>
-	 * @param userNm
-	 * @param userId
-	 * @param phoneNo
+	 * <h1>해시코드 생성</h1>
 	 * @return
 	 */
-	public static Integer makeMbrHash(String userNm, String userId, String phoneNo) {
+	public static Integer makeHash(String... info) {
 
-		return (  userNm + "|"
-				+ userId + "|"
-				+ phoneNo + "|" ).hashCode();
+		String str = "";
+
+		for(String i : info) {
+			str = str.concat(i + "|");
+		}
+
+		return str.substring(0, str.length()-1).hashCode();
 
 	}
 
